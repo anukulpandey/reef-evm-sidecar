@@ -7,6 +7,20 @@ const provider = new ethers.JsonRpcProvider(RPC_URL);
 
 console.log("🔍 Listening for new blocks on", RPC_URL);
 
+// Helper: wait for n milliseconds
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+// Helper: retry fetch until success or max attempts reached
+async function fetchWithRetry(url, retries = 5, delayMs = 4000) {
+  for (let i = 0; i < retries; i++) {
+    const resp = await fetch(url);
+    if (resp.ok) return resp.json();
+    console.log(`      ⏳ Waiting for Blockscout to index... (Attempt ${i + 1}/${retries})`);
+    await delay(delayMs);
+  }
+  throw new Error(`Failed after ${retries} attempts`);
+}
+
 provider.on("block", async (blockNumber) => {
   try {
     const block = await provider.getBlock(blockNumber);
@@ -22,19 +36,13 @@ provider.on("block", async (blockNumber) => {
 
     for (let i = 0; i < block.transactions.length; i++) {
       const txHash = block.transactions[i];
-
       console.log(`\n   #${i + 1}`);
       console.log(`      🧾 Tx Hash: ${txHash}`);
-      console.log(`      🧾 Blockscout Tx URL: ${BLOCKSCOUT_API}/${txHash}`);
+      console.log(`      🌐 ${BLOCKSCOUT_API}/${txHash}`);
 
       try {
-        // Fetch from BlockScout
-        const resp = await fetch(`${BLOCKSCOUT_API}/${txHash}`);
-        if (!resp.ok) throw new Error(`BlockScout fetch failed (${resp.status})`);
+        const data = await fetchWithRetry(`${BLOCKSCOUT_API}/${txHash}`);
 
-        const data = await resp.json();
-
-        // Pretty print some main details
         console.log(`      👤 From: ${data.from?.hash || "N/A"}`);
         console.log(`      🎯 To: ${data.to?.hash || "Contract Creation"}`);
         console.log(`      💰 Value: ${ethers.formatEther(data.value || 0)} ETH`);
@@ -50,15 +58,11 @@ provider.on("block", async (blockNumber) => {
 
     // Collect unique affected addresses/contracts
     const affected = new Set();
-
     for (const txHash of block.transactions) {
       try {
-        const resp = await fetch(`${BLOCKSCOUT_API}/${txHash}`);
-        if (resp.ok) {
-          const data = await resp.json();
-          if (data.from?.hash) affected.add(data.from.hash);
-          if (data.to?.hash) affected.add(data.to.hash);
-        }
+        const data = await fetchWithRetry(`${BLOCKSCOUT_API}/${txHash}`, 3, 3000);
+        if (data.from?.hash) affected.add(data.from.hash);
+        if (data.to?.hash) affected.add(data.to.hash);
       } catch {}
     }
 
