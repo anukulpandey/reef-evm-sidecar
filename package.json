@@ -1,0 +1,31 @@
+{
+  "name": "reef-evm-sidecar",
+  "version": "1.0.0",
+  "description": "evm sidecar for emitting contract events",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anukulpandey/reef-evm-sidecar.git"
+  },
+  "keywords": [
+    "reef",
+    "evm",
+    "sidecar",
+    "api",
+    "pelagia",
+    "eth-json",
+    "metamask"
+  ],
+  "author": "@anukulpandey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anukulpandey/reef-evm-sidecar/issues"
+  },
+  "homepage": "https://github.com/anukulpandey/reef-evm-sidecar#readme",
+  "dependencies": {
+    "ethers": "^6.15.0"
+  }
+}
