@@ -2,9 +2,9 @@
   "name": "reef-evm-sidecar",
   "version": "1.0.0",
   "description": "evm sidecar for emitting contract events",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js"
   },
   "repository": {
     "type": "git",
