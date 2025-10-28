@@ -26,6 +26,8 @@
   },
   "homepage": "https://github.com/anukulpandey/reef-evm-sidecar#readme",
   "dependencies": {
-    "ethers": "^6.15.0"
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0",
+    "pusher": "^5.2.0"
   }
 }

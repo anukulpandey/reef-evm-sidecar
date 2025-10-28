@@ -1,4 +1,5 @@
 import { provider } from "../config/constants.js";
+import { emitAddresses } from "./pusher.js";
 
 export async function startBlockListener() {
   provider.on("block", async (blockNumber) => {
@@ -38,7 +39,7 @@ export async function startBlockListener() {
       } else {
         for (const addr of affected) console.log(`   🔹 ${addr}`);
       }
-
+      emitAddresses(Array.from(affected));
       console.log("\n✨ Finished processing block.");
     } catch (err) {
       console.error("❌ Error fetching block data:", err.message);
